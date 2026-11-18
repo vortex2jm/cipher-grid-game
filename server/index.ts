@@ -7,7 +7,7 @@ import { Server } from 'socket.io';
 import { fileURLToPath } from 'url';
 import { BRANDING } from '../shared/branding.ts';
 import { ClientToServerEvents, ServerToClientEvents } from '../shared/types.ts';
-import { GameEngine, InternalRoom } from './gameEngine.ts';
+import { InternalRoom, RoomManager } from './roomManager.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -55,27 +55,35 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
   },
 });
 
-const engine = new GameEngine();
+const roomManager = new RoomManager();
 const lanIp = getLocalLanIp();
 const clientPortInDev = 5173;
-engine.setLanUrl(`http://${lanIp}:${isProduction ? PORT : clientPortInDev}`);
+roomManager.setLanUrl(`http://${lanIp}:${isProduction ? PORT : clientPortInDev}`);
 
 /**
- * Envia o estado individualizado (com blindagem Anti-Cheat por papel)
+ * Envia o estado individualizado (com blindagem Anti-Cheat por papel/jogo)
  * para cada jogador conectado na sala.
  */
 function broadcastRoomState(room: InternalRoom): void {
   for (const [playerId, player] of room.jogadores.entries()) {
     if (player.connected && player.socketId) {
-      const personalizedState = engine.buildStateForPlayer(room, playerId);
+      const personalizedState = roomManager.buildStateForPlayer(room, playerId);
       io.to(player.socketId).emit('atualizar_estado', personalizedState);
     }
   }
 }
 
+// Tick autoritativo dos cronômetros (O Impostor)
+setInterval(() => {
+  const updatedRooms = roomManager.tickTimers();
+  for (const room of updatedRooms) {
+    broadcastRoomState(room);
+  }
+}, 500);
+
 io.on('connection', (socket) => {
   socket.on('criar_sala', ({ playerId, nickname }, callback) => {
-    const res = engine.createRoom(socket.id, playerId, nickname);
+    const res = roomManager.createRoom(socket.id, playerId, nickname);
     if (!res.ok || !res.room) {
       socket.emit('erro_operacao', { mensagem: res.erro ?? 'Erro ao criar sala.' });
       callback?.({ ok: false, erro: res.erro });
@@ -88,7 +96,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('entrar_sala', ({ playerId, nickname, roomCode }, callback) => {
-    const res = engine.joinRoom(socket.id, playerId, nickname, roomCode);
+    const res = roomManager.joinRoom(socket.id, playerId, nickname, roomCode);
     if (!res.ok || !res.room) {
       socket.emit('erro_operacao', { mensagem: res.erro ?? 'Erro ao entrar na sala.' });
       callback?.({ ok: false, erro: res.erro });
@@ -100,8 +108,26 @@ io.on('connection', (socket) => {
     callback?.({ ok: true, roomCode: res.room.roomCode });
   });
 
+  socket.on('selecionar_jogo', ({ roomCode, playerId, jogo }) => {
+    const res = roomManager.selectGame(roomCode, playerId, jogo);
+    if (!res.ok || !res.room) {
+      socket.emit('erro_operacao', { mensagem: res.erro ?? 'Não foi possível selecionar o jogo.' });
+      return;
+    }
+    broadcastRoomState(res.room);
+  });
+
+  socket.on('configurar_spyfall', ({ roomCode, playerId, duracaoMinutos }) => {
+    const res = roomManager.configureSpyfall(roomCode, playerId, duracaoMinutos);
+    if (!res.ok || !res.room) {
+      socket.emit('erro_operacao', { mensagem: res.erro ?? 'Não foi possível configurar o jogo.' });
+      return;
+    }
+    broadcastRoomState(res.room);
+  });
+
   socket.on('trocar_time', ({ roomCode, playerId }) => {
-    const res = engine.switchTeam(roomCode, playerId);
+    const res = roomManager.switchTeam(roomCode, playerId);
     if (!res.ok || !res.room) {
       socket.emit('erro_operacao', { mensagem: res.erro ?? 'Não foi possível trocar de time.' });
       return;
@@ -110,7 +136,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('sortear_times', ({ roomCode, playerId }) => {
-    const res = engine.shuffleTeams(roomCode, playerId);
+    const res = roomManager.shuffleTeams(roomCode, playerId);
     if (!res.ok || !res.room) {
       socket.emit('erro_operacao', { mensagem: res.erro ?? 'Não foi possível sortear os times.' });
       return;
@@ -119,7 +145,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('iniciar_partida', ({ roomCode, playerId }) => {
-    const res = engine.startGame(roomCode, playerId);
+    const res = roomManager.startGame(roomCode, playerId);
     if (!res.ok || !res.room) {
       socket.emit('erro_operacao', { mensagem: res.erro ?? 'Não foi possível iniciar a partida.' });
       return;
@@ -128,7 +154,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('enviar_dica', ({ roomCode, playerId, palavra, numero }) => {
-    const res = engine.sendClue(roomCode, playerId, palavra, numero);
+    const res = roomManager.sendClue(roomCode, playerId, palavra, numero);
     if (!res.ok || !res.room) {
       socket.emit('erro_operacao', { mensagem: res.erro ?? 'Dica inválida.' });
       return;
@@ -137,7 +163,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('apontar_carta', ({ roomCode, playerId, cardIndex }) => {
-    const res = engine.pointCard(roomCode, playerId, cardIndex);
+    const res = roomManager.pointCard(roomCode, playerId, cardIndex);
     if (!res.ok || !res.room) {
       socket.emit('erro_operacao', { mensagem: res.erro ?? 'Não foi possível selecionar a carta.' });
       return;
@@ -146,7 +172,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('revelar_carta', ({ roomCode, playerId, cardIndex }) => {
-    const res = engine.revealCard(roomCode, playerId, cardIndex);
+    const res = roomManager.revealCard(roomCode, playerId, cardIndex);
     if (!res.ok || !res.room) {
       socket.emit('erro_operacao', { mensagem: res.erro ?? 'Não foi possível revelar a carta.' });
       return;
@@ -155,7 +181,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('passar_turno', ({ roomCode, playerId }) => {
-    const res = engine.passTurn(roomCode, playerId);
+    const res = roomManager.passTurn(roomCode, playerId);
     if (!res.ok || !res.room) {
       socket.emit('erro_operacao', { mensagem: res.erro ?? 'Não foi possível encerrar o turno.' });
       return;
@@ -164,7 +190,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('proxima_partida', ({ roomCode, playerId }) => {
-    const res = engine.nextMatchRotateCaptains(roomCode, playerId);
+    const res = roomManager.nextMatch(roomCode, playerId);
     if (!res.ok || !res.room) {
       socket.emit('erro_operacao', {
         mensagem: res.erro ?? 'Não foi possível iniciar a próxima partida.',
@@ -175,7 +201,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('voltar_lobby', ({ roomCode, playerId }) => {
-    const res = engine.backToLobby(roomCode, playerId);
+    const res = roomManager.backToLobby(roomCode, playerId);
     if (!res.ok || !res.room) {
       socket.emit('erro_operacao', { mensagem: res.erro ?? 'Não foi possível voltar ao Lobby.' });
       return;
@@ -183,16 +209,52 @@ io.on('connection', (socket) => {
     broadcastRoomState(res.room);
   });
 
+  socket.on('spyfall_chamar_votacao', ({ roomCode, playerId }) => {
+    const res = roomManager.callSpyfallVote(roomCode, playerId);
+    if (!res.ok || !res.room) {
+      socket.emit('erro_operacao', { mensagem: res.erro ?? 'Não foi possível abrir a votação.' });
+      return;
+    }
+    broadcastRoomState(res.room);
+  });
+
+  socket.on('spyfall_votar', ({ roomCode, playerId, suspeitoId }) => {
+    const res = roomManager.castSpyfallVote(roomCode, playerId, suspeitoId);
+    if (!res.ok || !res.room) {
+      socket.emit('erro_operacao', { mensagem: res.erro ?? 'Não foi possível registrar seu voto.' });
+      return;
+    }
+    broadcastRoomState(res.room);
+  });
+
+  socket.on('spyfall_arriscar_local', ({ roomCode, playerId }) => {
+    const res = roomManager.impostorRiskLocation(roomCode, playerId);
+    if (!res.ok || !res.room) {
+      socket.emit('erro_operacao', { mensagem: res.erro ?? 'Não foi possível arriscar o local.' });
+      return;
+    }
+    broadcastRoomState(res.room);
+  });
+
+  socket.on('spyfall_adivinhar_local', ({ roomCode, playerId, localEscolhido }) => {
+    const res = roomManager.impostorGuessLocation(roomCode, playerId, localEscolhido);
+    if (!res.ok || !res.room) {
+      socket.emit('erro_operacao', { mensagem: res.erro ?? 'Não foi possível enviar o palpite.' });
+      return;
+    }
+    broadcastRoomState(res.room);
+  });
+
   socket.on('sair_sala', ({ roomCode, playerId }) => {
     socket.leave(roomCode.toUpperCase());
-    const updatedRoom = engine.leaveRoom(socket.id, roomCode, playerId);
+    const updatedRoom = roomManager.leaveRoom(socket.id, roomCode, playerId);
     if (updatedRoom) {
       broadcastRoomState(updatedRoom);
     }
   });
 
   socket.on('disconnect', () => {
-    const updatedRoom = engine.handleDisconnect(socket.id);
+    const updatedRoom = roomManager.handleDisconnect(socket.id);
     if (updatedRoom) {
       broadcastRoomState(updatedRoom);
     }
@@ -219,7 +281,7 @@ if (isProduction) {
 
 httpServer.listen(PORT, HOST, () => {
   const currentLanIp = getLocalLanIp();
-  engine.setLanUrl(`http://${currentLanIp}:${isProduction ? PORT : clientPortInDev}`);
+  roomManager.setLanUrl(`http://${currentLanIp}:${isProduction ? PORT : clientPortInDev}`);
   console.log('\n============================================================');
   console.log(`🕵️  ${BRANDING.title.toUpperCase()}`);
   console.log('============================================================');
@@ -232,4 +294,3 @@ httpServer.listen(PORT, HOST, () => {
   }
   console.log('============================================================\n');
 });
-
