@@ -87,120 +87,104 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
     const nextSpokesIdx = players.length > 1 ? (nextCapIdx + 1) % players.length : -1;
 
     return (
-      <div
-        className={`rounded-2xl border-2 p-3.5 sm:p-5 flex flex-col justify-between transition-all ${
-          isBlue
-            ? 'bg-blue-950/25 border-blue-500/40 shadow-[0_0_25px_rgba(37,99,235,0.1)]'
-            : 'bg-rose-950/25 border-rose-500/40 shadow-[0_0_25px_rgba(225,29,72,0.1)]'
-        }`}
-      >
+      <div className="bg-[#FFFDF9] border-2 border-zinc-900 rounded-2xl shadow-[0_4px_0_0_#18181b] overflow-hidden flex flex-col justify-between">
         <div>
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5 mb-3">
+          <div
+            className={`px-4 py-3 border-b-2 border-zinc-900 flex items-center justify-between ${
+              isBlue ? 'bg-[#2563EB] text-white' : 'bg-[#E11D48] text-white'
+            }`}
+          >
             <div className="flex items-center gap-2">
-              <span
-                className={`w-3 h-3 rounded-full ${
-                  isBlue
-                    ? 'bg-blue-500 shadow-[0_0_10px_#3b82f6]'
-                    : 'bg-rose-500 shadow-[0_0_10px_#f43f5e]'
-                }`}
-              />
-              <h2
-                className={`font-extrabold uppercase tracking-wider text-sm sm:text-lg ${
-                  isBlue ? 'text-blue-400' : 'text-rose-400'
-                }`}
-              >
+              <span className="w-3 h-3 rounded-full bg-white border-2 border-zinc-900 shrink-0" />
+              <h2 className="font-display font-extrabold uppercase tracking-wider text-sm sm:text-lg">
                 {BRANDING.teams[team].name}
               </h2>
             </div>
             <span
-              className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-bold ${
+              className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-bold border-2 border-zinc-900 ${
                 players.length >= 2
-                  ? isBlue
-                    ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40'
-                    : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
-                  : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                  ? 'bg-[#FFFDF9] text-zinc-900'
+                  : 'bg-[#FACC15] text-zinc-900'
               }`}
             >
               {players.length} / mín. 2
             </span>
           </div>
 
-          {players.length === 0 ? (
-            <div className="py-8 text-center text-slate-500 font-mono text-xs uppercase tracking-wider border border-dashed border-slate-800 rounded-xl">
-              Nenhum agente neste esquadrão
-            </div>
-          ) : (
-            <ol className="space-y-2">
-              {players.map((p, idx) => {
-                const isMe = p.playerId === roomState.meuPlayerId;
-                const willBeCaptain = idx === nextCapIdx;
-                const willBeFirstSpokesperson = idx === nextSpokesIdx;
+          <div className="p-3.5 sm:p-4">
+            {players.length === 0 ? (
+              <div className="py-8 text-center text-zinc-500 font-mono font-bold text-xs uppercase tracking-wider border-2 border-dashed border-zinc-300 bg-[#F3EFE6] rounded-xl">
+                Nenhum agente neste esquadrão
+              </div>
+            ) : (
+              <ol className="space-y-2.5">
+                {players.map((p, idx) => {
+                  const isMe = p.playerId === roomState.meuPlayerId;
+                  const willBeCaptain = idx === nextCapIdx;
+                  const willBeFirstSpokesperson = idx === nextSpokesIdx;
 
-                return (
-                  <li
-                    key={p.playerId}
-                    className={`flex items-center justify-between px-3 py-2.5 rounded-xl border transition-all ${
-                      isMe
-                        ? isBlue
-                          ? 'bg-blue-600/25 border-blue-400 text-white'
-                          : 'bg-rose-600/25 border-rose-400 text-white'
-                        : 'bg-slate-900/90 border-slate-800 text-slate-200'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="w-6 h-6 rounded-lg bg-slate-950 border border-slate-700 font-mono text-xs font-bold flex items-center justify-center text-slate-400 shrink-0">
-                        #{idx + 1}
-                      </span>
-                      <span className="font-bold text-sm sm:text-base tracking-wide truncate">
-                        {p.nickname}
-                      </span>
-                      {isMe && (
-                        <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shrink-0 font-bold">
-                          VOCÊ
+                  return (
+                    <li
+                      key={p.playerId}
+                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl border-2 border-zinc-900 shadow-[0_2px_0_0_#18181b] transition-all ${
+                        isMe ? 'bg-[#FEF08A] text-zinc-900' : 'bg-white text-zinc-900'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="w-6 h-6 rounded-lg bg-[#F3EFE6] border-2 border-zinc-900 font-mono text-xs font-bold flex items-center justify-center text-zinc-900 shrink-0">
+                          #{idx + 1}
                         </span>
-                      )}
-                      {p.isHost && (
-                        <span
-                          title="Host da Sala"
-                          className="inline-flex items-center gap-1 text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 shrink-0"
-                        >
-                          <Crown className="w-3 h-3" /> HOST
+                        <span className="font-bold text-sm sm:text-base tracking-wide truncate">
+                          {p.nickname}
                         </span>
-                      )}
-                    </div>
+                        {isMe && (
+                          <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-zinc-900 text-[#FACC15] shrink-0 font-bold">
+                            VOCÊ
+                          </span>
+                        )}
+                        {p.isHost && (
+                          <span
+                            title="Host da Sala"
+                            className="inline-flex items-center gap-1 text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-[#FACC15] text-zinc-900 border-2 border-zinc-900 shrink-0 font-bold"
+                          >
+                            <Crown className="w-3 h-3" /> HOST
+                          </span>
+                        )}
+                      </div>
 
-                    <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                      {willBeCaptain && (
+                      <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                        {willBeCaptain && (
+                          <span
+                            title="Será o Capitão na próxima partida"
+                            className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-md bg-zinc-900 text-white border border-zinc-900 font-bold"
+                          >
+                            CAPITÃO
+                          </span>
+                        )}
+                        {willBeFirstSpokesperson && (
+                          <span
+                            title="Será o 1º Porta-voz na próxima partida"
+                            className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-md bg-[#4ADE80] text-zinc-900 border-2 border-zinc-900 font-bold"
+                          >
+                            1º PORTA-VOZ
+                          </span>
+                        )}
                         <span
-                          title="Será o Capitão na próxima partida"
-                          className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-md bg-purple-500/25 text-purple-200 border border-purple-400/50 font-bold"
-                        >
-                          CAPITÃO
-                        </span>
-                      )}
-                      {willBeFirstSpokesperson && (
-                        <span
-                          title="Será o 1º Porta-voz na próxima partida"
-                          className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-md bg-emerald-500/25 text-emerald-200 border border-emerald-400/50 font-bold"
-                        >
-                          1º PORTA-VOZ
-                        </span>
-                      )}
-                      <span
-                        title={p.connected ? 'Online' : 'Reconectando...'}
-                        className={`w-2 h-2 rounded-full ${
-                          p.connected ? 'bg-emerald-400' : 'bg-amber-500 animate-ping'
-                        }`}
-                      />
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
-          )}
+                          title={p.connected ? 'Online' : 'Reconectando...'}
+                          className={`w-2.5 h-2.5 rounded-full border border-zinc-900 ${
+                            p.connected ? 'bg-[#4ADE80]' : 'bg-[#FACC15] animate-ping'
+                          }`}
+                        />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
+          </div>
         </div>
 
-        <div className="mt-3 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-[11px] font-mono text-slate-400">
+        <div className="px-4 py-2.5 bg-[#F3EFE6] border-t-2 border-zinc-900 flex items-center justify-between text-[11px] font-mono font-bold text-zinc-700">
           <span>FILA CIRCULAR AUTOMÁTICA</span>
           <span>
             {players.length < 2
@@ -215,14 +199,14 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
   return (
     <div className="min-h-[100dvh] max-w-4xl mx-auto px-3 sm:px-6 py-3 sm:py-6 flex flex-col justify-between gap-4">
       {/* Header com Código, Botão de Compartilhar Link e Botão de QR Code */}
-      <header className="bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 sm:p-5 flex flex-col gap-3.5 shadow-xl">
+      <header className="bg-[#FFFDF9] border-2 border-zinc-900 rounded-2xl p-3.5 sm:p-5 flex flex-col gap-3.5 shadow-[0_4px_0_0_#18181b]">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <div className="flex items-center gap-1.5 text-[11px] font-mono text-cyan-400 uppercase tracking-widest">
-              <Shield className="w-3.5 h-3.5 shrink-0" />
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#FACC15] border-2 border-zinc-900 text-[10px] font-mono font-bold text-zinc-900 uppercase tracking-widest">
+              <Shield className="w-3 h-3 shrink-0" />
               <span>LOBBY DA SALA</span>
             </div>
-            <h1 className="text-base sm:text-2xl font-extrabold uppercase tracking-tight text-white mt-0.5">
+            <h1 className="font-display text-lg sm:text-2xl font-extrabold uppercase tracking-tight text-zinc-900 mt-1.5">
               {BRANDING.title}
             </h1>
           </div>
@@ -231,7 +215,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
             type="button"
             onClick={onLeaveRoom}
             title="Sair da Sala"
-            className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-rose-950/60 hover:text-rose-300 border border-slate-700 text-slate-400 transition-colors shrink-0"
+            className="min-h-[44px] min-w-[44px] p-2.5 rounded-xl bg-white hover:bg-[#E11D48] hover:text-white active:translate-y-[2px] active:shadow-none border-2 border-zinc-900 shadow-[0_3px_0_0_#18181b] text-zinc-900 transition-all shrink-0 flex items-center justify-center"
           >
             <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
@@ -240,25 +224,25 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
         {/* Barra de Convite: Código + Copiar Link + QR Code */}
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-stretch">
           {/* Código da Sala */}
-          <div className="sm:col-span-5 bg-slate-950 border-2 border-cyan-500/50 rounded-xl px-3.5 py-2 flex items-center justify-between">
+          <div className="sm:col-span-5 bg-[#F3EFE6] border-2 border-zinc-900 rounded-xl px-3.5 py-2 flex items-center justify-between">
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-widest text-slate-400">
+              <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-600">
                 CÓDIGO DA SALA
               </div>
-              <div className="text-2xl sm:text-3xl font-mono font-extrabold tracking-[0.2em] text-cyan-300 leading-none mt-0.5">
+              <div className="text-2xl sm:text-3xl font-mono font-extrabold tracking-[0.2em] text-zinc-900 leading-none mt-0.5">
                 {roomState.roomCode}
               </div>
             </div>
             <button
               type="button"
               onClick={handleCopyCode}
-              className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-mono font-bold flex items-center gap-1.5 transition-colors"
+              className="min-h-[42px] px-3 py-2 rounded-lg bg-white hover:bg-[#FFFBEB] active:translate-y-[2px] active:shadow-none border-2 border-zinc-900 shadow-[0_3px_0_0_#18181b] text-zinc-900 text-xs font-mono font-bold flex items-center gap-1.5 transition-all"
               title="Copiar código"
             >
               {copiedCode ? (
                 <>
-                  <Check className="w-4 h-4 text-emerald-400" />
-                  <span className="text-emerald-300">Copiado</span>
+                  <Check className="w-4 h-4 text-[#16A34A]" />
+                  <span>Copiado</span>
                 </>
               ) : (
                 <>
@@ -274,7 +258,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
             <button
               type="button"
               onClick={handleQuickShareLink}
-              className="py-3 px-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 active:translate-y-0.5 text-slate-950 font-extrabold uppercase tracking-wider text-xs border-b-4 border-cyan-700 flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(6,182,212,0.25)]"
+              className="min-h-[48px] py-3 px-3 rounded-xl bg-[#FACC15] hover:bg-[#FDE047] active:translate-y-[3px] active:shadow-none text-zinc-900 font-display font-extrabold uppercase tracking-wider text-xs border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center justify-center gap-2 transition-all"
             >
               {copiedLink ? (
                 <>
@@ -292,9 +276,9 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
             <button
               type="button"
               onClick={() => setShowQrModal(true)}
-              className="py-3 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 active:translate-y-0.5 text-white font-extrabold uppercase tracking-wider text-xs border-2 border-slate-600 border-b-4 flex items-center justify-center gap-2 transition-all"
+              className="min-h-[48px] py-3 px-3 rounded-xl bg-[#FFFDF9] hover:bg-zinc-100 active:translate-y-[3px] active:shadow-none text-zinc-900 font-display font-extrabold uppercase tracking-wider text-xs border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center justify-center gap-2 transition-all"
             >
-              <QrCode className="w-4 h-4 text-cyan-400 shrink-0" />
+              <QrCode className="w-4 h-4 text-zinc-900 shrink-0" />
               <span>QR Code da Sala</span>
             </button>
           </div>
@@ -302,29 +286,29 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
       </header>
 
       {/* Seu Time Atual + Botão de Trocar de Time */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-xl px-3.5 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-300">
+      <div className="bg-[#FFFDF9] border-2 border-zinc-900 rounded-xl px-3.5 py-3 shadow-[0_4px_0_0_#18181b] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-zinc-700">
         <div className="flex items-start sm:items-center gap-2.5">
-          <Radio className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5 sm:mt-0" />
+          <Radio className="w-4 h-4 text-zinc-900 shrink-0 mt-0.5 sm:mt-0" />
           <span>
             Você está no{' '}
             <strong
-              className={
-                roomState.meuTime === 'azul' ? 'text-blue-400' : 'text-rose-400'
-              }
+              className={`px-1.5 py-0.5 rounded font-bold text-white ${
+                roomState.meuTime === 'azul' ? 'bg-[#2563EB]' : 'bg-[#E11D48]'
+              }`}
             >
               {BRANDING.teams[roomState.meuTime].name}
             </strong>
-            . Os papéis (<span className="text-purple-300 font-bold">Capitão</span> e{' '}
-            <span className="text-emerald-300 font-bold">Porta-voz</span>) rodam sozinhos na fila!
+            . Os papéis (<strong className="text-zinc-900">Capitão</strong> e{' '}
+            <strong className="text-zinc-900">Porta-voz</strong>) rodam sozinhos na fila!
           </span>
         </div>
 
         <button
           type="button"
           onClick={onSwitchTeam}
-          className="shrink-0 py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 active:translate-y-0.5 text-white font-bold uppercase tracking-wider text-xs border border-slate-600 border-b-4 flex items-center justify-center gap-2 transition-all"
+          className="min-h-[48px] shrink-0 py-2.5 px-4 rounded-xl bg-white hover:bg-zinc-100 active:translate-y-[3px] active:shadow-none text-zinc-900 font-display font-bold uppercase tracking-wider text-xs border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center justify-center gap-2 transition-all"
         >
-          <ArrowLeftRight className="w-4 h-4 text-cyan-400" />
+          <ArrowLeftRight className="w-4 h-4 text-zinc-900" />
           <span>
             Ir para {roomState.meuTime === 'azul' ? 'Time Vermelho' : 'Time Azul'}
           </span>
@@ -338,11 +322,13 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
       </div>
 
       {/* Rodapé de Controle do Host / Status */}
-      <footer className="bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-xl">
+      <footer className="bg-[#FFFDF9] border-2 border-zinc-900 rounded-2xl p-3.5 sm:p-5 shadow-[0_4px_0_0_#18181b]">
         {isHost ? (
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-xs font-mono text-amber-300">
-              <Crown className="w-4 h-4 shrink-0" />
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-zinc-900">
+              <span className="p-1.5 rounded-lg bg-[#FACC15] border-2 border-zinc-900 shrink-0">
+                <Crown className="w-3.5 h-3.5" />
+              </span>
               <span>
                 {canStart
                   ? 'Tudo pronto! Você pode iniciar a partida.'
@@ -355,9 +341,9 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                 type="button"
                 onClick={onShuffleTeams}
                 disabled={roomState.jogadores.length < 2}
-                className="px-4 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 active:translate-y-0.5 disabled:opacity-40 text-slate-100 font-extrabold uppercase tracking-wider text-xs border border-slate-600 border-b-4 flex items-center justify-center gap-2 transition-all"
+                className="min-h-[48px] px-4 py-3 rounded-xl bg-white hover:bg-zinc-100 active:translate-y-[3px] active:shadow-none disabled:opacity-40 disabled:pointer-events-none text-zinc-900 font-display font-extrabold uppercase tracking-wider text-xs border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center justify-center gap-2 transition-all"
               >
-                <Shuffle className="w-4 h-4 text-cyan-400" />
+                <Shuffle className="w-4 h-4 text-zinc-900" />
                 <span>Sortear Times</span>
               </button>
 
@@ -365,7 +351,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                 type="button"
                 onClick={onStartGame}
                 disabled={!canStart}
-                className="px-5 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-extrabold uppercase tracking-wider text-xs sm:text-sm border-b-4 border-emerald-700 flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(16,185,129,0.25)]"
+                className="min-h-[48px] px-5 py-3 rounded-xl bg-[#4ADE80] hover:bg-[#86EFAC] active:translate-y-[3px] active:shadow-none disabled:opacity-40 disabled:pointer-events-none text-zinc-900 font-display font-extrabold uppercase tracking-wider text-xs sm:text-sm border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center justify-center gap-2 transition-all"
               >
                 <Play className="w-4 h-4 fill-current" />
                 <span>Iniciar Partida</span>
@@ -374,17 +360,17 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
           </div>
         ) : (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
-            <div className="flex items-center gap-2 text-xs sm:text-sm font-mono text-slate-300">
-              <Users className="w-4 h-4 text-cyan-400 shrink-0" />
+            <div className="flex items-center gap-2 text-xs sm:text-sm font-mono font-bold text-zinc-700">
+              <Users className="w-4 h-4 text-zinc-900 shrink-0" />
               <span>
                 Aguardando o Host (
-                <strong className="text-white">
+                <strong className="text-zinc-900">
                   {roomState.jogadores.find((j) => j.isHost)?.nickname ?? 'Host'}
                 </strong>
                 ) iniciar a partida...
               </span>
             </div>
-            <span className="text-xs font-mono text-slate-500">
+            <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-[#F3EFE6] border-2 border-zinc-900 text-zinc-900">
               {canStart
                 ? 'Equipes completas ✓'
                 : `Azuis (${bluePlayers.length}/2) • Vermelhos (${redPlayers.length}/2)`}

@@ -62,35 +62,38 @@ export const ShareRoomModal: React.FC<ShareRoomModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-zinc-900/60 flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div
-        className="bg-slate-900 border-2 border-cyan-500/40 rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4 text-center"
+        className="bg-[#FFFDF9] border-2 border-zinc-900 rounded-2xl max-w-sm w-full p-5 shadow-[0_6px_0_0_#18181b] space-y-4 text-center text-zinc-900"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-cyan-400 font-bold">
+        <div className="flex items-center justify-between border-b-2 border-zinc-900/15 pb-3">
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-zinc-900 font-bold">
             <QrCode className="w-4 h-4" />
             <span>CONVIDAR PARA SALA {roomCode}</span>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
+            className="p-2 rounded-lg bg-white hover:bg-zinc-100 active:translate-y-[2px] active:shadow-none border-2 border-zinc-900 shadow-[0_2px_0_0_#18181b] text-zinc-900 transition-all"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <p className="text-xs text-slate-300 leading-relaxed">
+        <p className="text-xs text-zinc-700 font-medium leading-relaxed">
           Aponte a câmera do celular (no mesmo Wi-Fi) para entrar direto na sala{' '}
-          <strong className="text-cyan-300 font-mono">{roomCode}</strong>:
+          <strong className="px-1.5 py-0.5 rounded bg-[#FACC15] border border-zinc-900 text-zinc-900 font-mono">
+            {roomCode}
+          </strong>
+          :
         </p>
 
         {/* QR Code SVG Container */}
-        <div className="bg-white p-3.5 rounded-2xl inline-block mx-auto shadow-[0_0_30px_rgba(6,182,212,0.25)]">
+        <div className="bg-white p-3.5 rounded-xl border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] inline-block mx-auto">
           <svg
             viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
             className="w-48 h-48 sm:w-56 sm:h-56 block"
@@ -106,7 +109,7 @@ export const ShareRoomModal: React.FC<ShareRoomModalProps> = ({
                     y={r + quietZone}
                     width={1}
                     height={1}
-                    fill="#020617"
+                    fill="#18181B"
                   />
                 ) : null
               )
@@ -116,9 +119,9 @@ export const ShareRoomModal: React.FC<ShareRoomModalProps> = ({
 
         {/* Link + Botões */}
         <div className="space-y-2.5 text-left">
-          <div className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 flex items-center gap-2">
-            <Wifi className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span className="text-xs font-mono text-cyan-300 truncate select-all">
+          <div className="bg-[#F3EFE6] border-2 border-zinc-900 rounded-xl px-3 py-2.5 flex items-center gap-2">
+            <Wifi className="w-4 h-4 text-[#16A34A] shrink-0" />
+            <span className="text-xs font-mono font-bold text-zinc-900 truncate select-all">
               {inviteUrl}
             </span>
           </div>
@@ -127,16 +130,16 @@ export const ShareRoomModal: React.FC<ShareRoomModalProps> = ({
             <button
               type="button"
               onClick={handleCopyLink}
-              className="py-3 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 active:translate-y-0.5 text-white font-bold uppercase tracking-wider text-xs border border-slate-600 border-b-4 flex items-center justify-center gap-1.5 transition-all"
+              className="min-h-[48px] py-3 px-3 rounded-xl bg-white hover:bg-zinc-100 active:translate-y-[3px] active:shadow-none text-zinc-900 font-display font-bold uppercase tracking-wider text-xs border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center justify-center gap-1.5 transition-all"
             >
               {copied ? (
                 <>
-                  <Check className="w-4 h-4 text-emerald-400" />
-                  <span className="text-emerald-300">Copiado!</span>
+                  <Check className="w-4 h-4 text-[#16A34A]" />
+                  <span>Copiado!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-4 h-4 text-cyan-400" />
+                  <Copy className="w-4 h-4 text-zinc-900" />
                   <span>Copiar Link</span>
                 </>
               )}
@@ -145,7 +148,7 @@ export const ShareRoomModal: React.FC<ShareRoomModalProps> = ({
             <button
               type="button"
               onClick={handleNativeShare}
-              className="py-3 px-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 active:translate-y-0.5 text-slate-950 font-extrabold uppercase tracking-wider text-xs border-b-4 border-cyan-700 flex items-center justify-center gap-1.5 transition-all"
+              className="min-h-[48px] py-3 px-3 rounded-xl bg-[#FACC15] hover:bg-[#FDE047] active:translate-y-[3px] active:shadow-none text-zinc-900 font-display font-extrabold uppercase tracking-wider text-xs border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center justify-center gap-1.5 transition-all"
             >
               <Share2 className="w-4 h-4" />
               <span>Compartilhar</span>
@@ -156,4 +159,3 @@ export const ShareRoomModal: React.FC<ShareRoomModalProps> = ({
     </div>
   );
 };
-

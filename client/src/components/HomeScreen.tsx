@@ -39,61 +39,63 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   };
 
   return (
-    <div className="min-h-[100dvh] flex flex-col justify-between px-3.5 py-4 sm:py-10 max-w-xl mx-auto">
+    <div className="min-h-[100dvh] flex flex-col justify-between px-3.5 py-4 sm:py-8 max-w-xl mx-auto">
       {/* Top Status Bar */}
-      <div className="flex items-center justify-between text-[11px] sm:text-xs font-mono text-slate-400 border-b border-slate-800/80 pb-2.5">
-        <div className="flex items-center gap-1.5">
-          <Terminal className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+      <div className="flex items-center justify-between gap-2 text-[11px] sm:text-xs font-mono">
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FFFDF9] border-2 border-zinc-900 shadow-[0_2px_0_0_#18181b] text-zinc-900 font-bold min-w-0">
+          <Terminal className="w-3.5 h-3.5 text-zinc-900 shrink-0" />
           <span className="tracking-wider uppercase truncate">{BRANDING.version}</span>
         </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          <Wifi
-            className={`w-3.5 h-3.5 ${
-              isConnected ? 'text-emerald-400' : 'text-rose-500 animate-pulse'
+
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FFFDF9] border-2 border-zinc-900 shadow-[0_2px_0_0_#18181b] font-bold shrink-0">
+          <span
+            className={`w-2.5 h-2.5 rounded-full border border-zinc-900 ${
+              isConnected ? 'bg-[#4ADE80]' : 'bg-[#E11D48] animate-pulse'
             }`}
           />
-          <span className={isConnected ? 'text-emerald-400' : 'text-rose-400'}>
+          <Wifi className="w-3.5 h-3.5 text-zinc-900 shrink-0" />
+          <span className="text-zinc-900">
             {isConnected ? 'REDE LAN ONLINE' : 'RECONECTANDO...'}
           </span>
         </div>
       </div>
 
       {/* Main Dossier Card */}
-      <div className="my-auto py-4 sm:py-6">
-        <div className="text-center mb-5 sm:mb-8">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[10px] sm:text-xs font-mono uppercase tracking-widest mb-3">
+      <div className="my-auto py-5 sm:py-6">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FACC15] border-2 border-zinc-900 shadow-[0_3px_0_0_#18181b] -rotate-1 text-zinc-900 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider mb-3.5 max-w-full">
             <Shield className="w-3.5 h-3.5 shrink-0" />
             <span className="truncate">{BRANDING.subtitle}</span>
           </div>
-          <h1 className="text-xl sm:text-4xl font-extrabold tracking-tight text-white uppercase drop-shadow-[0_0_20px_rgba(6,182,212,0.2)] leading-tight">
+          <h1 className="font-display text-2xl sm:text-4xl font-extrabold tracking-tight text-zinc-900 uppercase leading-tight">
             {BRANDING.title}
           </h1>
-          <p className="mt-1.5 text-xs sm:text-sm text-slate-400 max-w-md mx-auto">
+          <p className="mt-2 text-xs sm:text-sm font-medium text-zinc-700 max-w-md mx-auto">
             Forme dois esquadrões no Wi-Fi, decodifique as dicas do seu Capitão e evite o Assassino.
           </p>
         </div>
 
         {/* Banner de Convite Direto via Link / QR Code */}
         {invitedRoomCode && (
-          <div className="mb-4 bg-cyan-950/60 border-2 border-cyan-400/60 rounded-2xl p-3.5 flex items-center gap-3 text-cyan-100 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
-            <div className="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-300 shrink-0">
+          <div className="mb-4 bg-[#FACC15] border-2 border-zinc-900 rounded-2xl p-3.5 flex items-center gap-3 text-zinc-900 shadow-[0_4px_0_0_#18181b]">
+            <div className="p-2.5 rounded-xl bg-[#FFFDF9] border-2 border-zinc-900 text-zinc-900 shrink-0">
               <QrCode className="w-6 h-6" />
             </div>
             <div className="text-xs sm:text-sm">
-              <div className="font-mono uppercase text-[10px] text-cyan-300 font-bold tracking-wider">
+              <div className="font-mono uppercase text-[10px] text-zinc-900 font-extrabold tracking-wider">
                 CONVITE DIRETO DETECTADO
               </div>
               <div>
-                Sala <strong className="font-mono text-white text-base">{invitedRoomCode}</strong> pronta! Digite seu Nickname abaixo e toque em <strong>Entrar</strong>.
+                Sala <strong className="font-mono text-zinc-900 text-base">{invitedRoomCode}</strong> pronta! Digite seu Nickname abaixo e toque em <strong>Entrar</strong>.
               </div>
             </div>
           </div>
         )}
 
-        <div className="bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-2xl p-4 sm:p-7 shadow-2xl space-y-5">
+        <div className="bg-[#FFFDF9] border-2 border-zinc-900 rounded-2xl p-5 sm:p-7 shadow-[0_6px_0_0_#18181b] space-y-5">
           {/* Identificação do Agente */}
           <div>
-            <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400 mb-1.5 font-bold">
+            <label className="block text-xs font-mono uppercase tracking-wider text-zinc-900 mb-1.5 font-bold">
               1. Seu Apelido (Nickname)
             </label>
             <input
@@ -103,29 +105,29 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               onChange={(e) => setNick(e.target.value)}
               placeholder="Ex: AGENTE_SOMBRA"
               autoFocus={Boolean(invitedRoomCode && !nick)}
-              className="w-full px-4 py-3.5 rounded-xl bg-slate-950 border-2 border-slate-700 focus:border-cyan-400 focus:outline-none text-white text-base font-bold tracking-wide placeholder:text-slate-600 transition-colors"
+              className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-white border-2 border-zinc-900 focus:outline-none focus:bg-[#FFFBEB] focus:shadow-[0_3px_0_0_#18181b] text-zinc-900 text-base font-bold tracking-wide placeholder:text-zinc-400 transition-all"
             />
           </div>
 
           <div className="grid grid-cols-1 gap-4 pt-1">
             {/* Entrar em Sala Existente */}
             <form onSubmit={handleJoin} className="space-y-2">
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-300">
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-700 font-bold">
                 2A. Entrar em uma Sala
               </label>
-              <div className="flex gap-2">
+              <div className="flex gap-2.5">
                 <input
                   type="text"
                   maxLength={4}
                   value={roomCode}
                   onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
                   placeholder="CÓDIGO"
-                  className="w-full px-3 py-3.5 rounded-xl bg-slate-950 border-2 border-slate-700 focus:border-cyan-400 focus:outline-none text-center font-mono text-lg font-extrabold uppercase tracking-[0.25em] text-cyan-300 placeholder:text-slate-600 placeholder:tracking-normal placeholder:text-sm"
+                  className="w-full min-h-[48px] px-3 py-3 rounded-xl bg-white border-2 border-zinc-900 focus:outline-none focus:bg-[#FFFBEB] focus:shadow-[0_3px_0_0_#18181b] text-center font-mono text-lg font-extrabold uppercase tracking-[0.25em] text-zinc-900 placeholder:text-zinc-400 placeholder:tracking-normal placeholder:text-sm transition-all"
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !isConnected}
-                  className="shrink-0 px-5 sm:px-6 py-3.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 active:translate-y-0.5 disabled:opacity-50 text-slate-950 font-extrabold uppercase tracking-wider text-sm border-b-4 border-cyan-700 flex items-center gap-2 transition-all"
+                  className="shrink-0 min-h-[48px] px-5 sm:px-6 py-3 rounded-xl bg-[#FACC15] hover:bg-[#FDE047] active:translate-y-[3px] active:shadow-none disabled:opacity-50 disabled:pointer-events-none text-zinc-900 font-display font-extrabold uppercase tracking-wider text-sm border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center gap-2 transition-all"
                 >
                   <span>Entrar</span>
                   <ArrowRight className="w-4 h-4" />
@@ -134,23 +136,23 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </form>
 
             <div className="relative flex py-0.5 items-center">
-              <div className="flex-grow border-t border-slate-800"></div>
-              <span className="flex-shrink mx-4 text-xs font-mono uppercase text-slate-500">OU</span>
-              <div className="flex-grow border-t border-slate-800"></div>
+              <div className="flex-grow border-t-2 border-zinc-900/15"></div>
+              <span className="flex-shrink mx-4 text-xs font-mono font-bold uppercase text-zinc-500">OU</span>
+              <div className="flex-grow border-t-2 border-zinc-900/15"></div>
             </div>
 
             {/* Criar Nova Sala */}
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-700 font-bold mb-1.5">
                 2B. Criar uma Sala Nova
               </label>
               <button
                 type="button"
                 onClick={handleCreate}
                 disabled={isLoading || !isConnected}
-                className="w-full py-3.5 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 active:translate-y-0.5 disabled:opacity-50 text-white font-extrabold uppercase tracking-wider text-sm border-2 border-slate-600 border-b-4 flex items-center justify-center gap-2.5 transition-all"
+                className="w-full min-h-[48px] py-3 px-5 rounded-xl bg-[#4ADE80] hover:bg-[#86EFAC] active:translate-y-[3px] active:shadow-none disabled:opacity-50 disabled:pointer-events-none text-zinc-900 font-display font-extrabold uppercase tracking-wider text-sm border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center justify-center gap-2.5 transition-all"
               >
-                <PlusCircle className="w-5 h-5 text-cyan-400" />
+                <PlusCircle className="w-5 h-5 text-zinc-900" />
                 <span>Criar Nova Sala</span>
               </button>
             </div>
@@ -159,9 +161,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       </div>
 
       {/* Footer Info */}
-      <div className="text-center text-[11px] font-mono text-slate-500 pt-3 border-t border-slate-900">
+      <div className="text-center text-[11px] font-mono font-bold text-zinc-600 pt-3 border-t-2 border-zinc-900/15">
         <span className="inline-flex items-center gap-1.5">
-          <Users className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <Users className="w-3.5 h-3.5 text-zinc-700 shrink-0" />
           <span>Mín. 4 jogadores (2 por time) • Rotação Automática de Capitão e Porta-voz</span>
         </span>
       </div>

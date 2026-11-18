@@ -29,18 +29,18 @@ export const App: React.FC = () => {
   } = useGameSocket();
 
   return (
-    <div className="relative min-h-[100dvh] text-slate-100">
+    <div className="relative min-h-[100dvh] text-zinc-900">
       {/* Toast Flutuante de Alerta / Erro Operacional */}
       {errorMessage && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-rose-950/95 border-2 border-rose-500 text-rose-100 px-4 py-3 rounded-xl shadow-2xl flex items-center justify-between gap-3 animate-bounce">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-[#E11D48] border-2 border-zinc-900 text-white px-4 py-3 rounded-xl shadow-[0_4px_0_0_#18181b] flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 text-xs sm:text-sm font-bold">
-            <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
+            <AlertTriangle className="w-5 h-5 text-[#FACC15] shrink-0" />
             <span>{errorMessage}</span>
           </div>
           <button
             type="button"
             onClick={clearError}
-            className="p-1 rounded-lg hover:bg-rose-900/60 text-rose-300"
+            className="p-1.5 rounded-lg bg-zinc-900/20 hover:bg-zinc-900/40 text-white border border-zinc-900/30 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
