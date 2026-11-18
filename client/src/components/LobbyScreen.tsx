@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import {
   ArrowLeftRight,
   Check,
+  Clock,
   Copy,
   Crown,
+  Gamepad2,
+  Grid2X2,
   LogOut,
   Play,
   QrCode,
@@ -11,22 +14,34 @@ import {
   Share2,
   Shuffle,
   Shield,
+  UserX,
   Users,
 } from 'lucide-react';
 import { BRANDING } from '../../../shared/branding';
-import { PlayerDTO, RoomStateDTO } from '../../../shared/types';
+import {
+  GameId,
+  PlayerDTO,
+  RoomStateDTO,
+  SpyfallDurationMinutes,
+} from '../../../shared/types';
 import { buildRoomInviteUrl, ShareRoomModal } from './ShareRoomModal';
 
 interface LobbyScreenProps {
   roomState: RoomStateDTO;
+  onSelectGame: (jogo: GameId) => void;
+  onConfigureSpyfall: (duracaoMinutos: SpyfallDurationMinutes) => void;
   onSwitchTeam: () => void;
   onShuffleTeams: () => void;
   onStartGame: () => void;
   onLeaveRoom: () => void;
 }
 
+const SPYFALL_DURATIONS: readonly SpyfallDurationMinutes[] = [5, 7, 8];
+
 export const LobbyScreen: React.FC<LobbyScreenProps> = ({
   roomState,
+  onSelectGame,
+  onConfigureSpyfall,
   onSwitchTeam,
   onShuffleTeams,
   onStartGame,
@@ -37,9 +52,14 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
   const [showQrModal, setShowQrModal] = useState(false);
 
   const isHost = roomState.meuPlayerId === roomState.hostId;
+  const isCodenames = roomState.jogoAtual === 'codenames';
   const bluePlayers = roomState.jogadores.filter((p) => p.team === 'azul');
   const redPlayers = roomState.jogadores.filter((p) => p.team === 'vermelho');
-  const canStart = bluePlayers.length >= 2 && redPlayers.length >= 2;
+  const connectedPlayers = roomState.jogadores.filter((p) => p.connected);
+
+  const canStart = isCodenames
+    ? bluePlayers.length >= 2 && redPlayers.length >= 2
+    : connectedPlayers.length >= 3;
 
   const handleCopyCode = async () => {
     try {
@@ -79,6 +99,104 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
     return roomState.partidaNumero === 0
       ? 0
       : roomState.indiceCapitao[team] % listLength;
+  };
+
+  const renderGameSelector = () => {
+    const games: {
+      id: GameId;
+      icon: React.ReactNode;
+      rules: string;
+    }[] = [
+      {
+        id: 'codenames',
+        icon: <Grid2X2 className="w-5 h-5 shrink-0" />,
+        rules: '2 times • Capitão dá 1 palavra de dica • Evite o Assassino na grade 5×5.',
+      },
+      {
+        id: 'spyfall',
+        icon: <UserX className="w-5 h-5 shrink-0" />,
+        rules: '1 Impostor secreto • Perguntas em roda • Descubra o infiltrado ou blefe até o fim.',
+      },
+    ];
+
+    const selectedMeta = BRANDING.games[roomState.jogoAtual];
+
+    return (
+      <section className="bg-[#FFFDF9] border-2 border-zinc-900 rounded-2xl p-3.5 sm:p-5 shadow-[0_4px_0_0_#18181b] space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-zinc-900">
+            <Gamepad2 className="w-4 h-4 shrink-0" />
+            <span>ESCOLHA O JOGO DA SALA</span>
+          </div>
+          <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-md bg-[#F3EFE6] border-2 border-zinc-900 text-zinc-900">
+            {isHost ? 'VOCÊ CONTROLA O MODO' : 'SELECIONADO PELO HOST'}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {games.map((g) => {
+            const meta = BRANDING.games[g.id];
+            const isSelected = roomState.jogoAtual === g.id;
+
+            return (
+              <button
+                key={g.id}
+                type="button"
+                disabled={!isHost}
+                onClick={() => onSelectGame(g.id)}
+                className={`text-left rounded-xl border-2 border-zinc-900 p-3.5 transition-all flex flex-col justify-between gap-2 ${
+                  isSelected
+                    ? 'bg-[#FACC15] text-zinc-900 shadow-[0_4px_0_0_#18181b]'
+                    : isHost
+                    ? 'bg-white hover:bg-[#FFFBEB] text-zinc-900 shadow-[0_4px_0_0_#18181b] active:translate-y-[3px] active:shadow-none cursor-pointer'
+                    : 'bg-[#F3EFE6] text-zinc-600 opacity-75 cursor-default'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2 w-full">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`p-2 rounded-lg border-2 border-zinc-900 ${
+                        isSelected ? 'bg-[#FFFDF9] text-zinc-900' : 'bg-[#F3EFE6] text-zinc-900'
+                      }`}
+                    >
+                      {g.icon}
+                    </span>
+                    <div>
+                      <div className="font-display font-extrabold uppercase tracking-tight text-sm sm:text-base leading-tight">
+                        {meta.title}
+                      </div>
+                      <div className="text-[10px] font-mono font-bold uppercase text-zinc-700 mt-0.5">
+                        MÍN. {meta.minPlayers} JOGADORES • {meta.badge}
+                      </div>
+                    </div>
+                  </div>
+
+                  {isSelected && (
+                    <span className="px-2 py-0.5 rounded-md bg-zinc-900 text-[#FACC15] font-mono text-[10px] font-extrabold uppercase shrink-0">
+                      ATIVO
+                    </span>
+                  )}
+                </div>
+
+                <p className="text-xs font-medium text-zinc-800 leading-snug">
+                  {meta.subtitle}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Resumo das regras do jogo ativo */}
+        <div className="bg-[#F3EFE6] border-2 border-zinc-900 rounded-xl px-3 py-2 text-xs text-zinc-800 flex flex-wrap items-center justify-between gap-2">
+          <span>
+            <strong className="font-mono uppercase text-zinc-900">
+              {selectedMeta.title}:
+            </strong>{' '}
+            {games.find((g) => g.id === roomState.jogoAtual)?.rules}
+          </span>
+        </div>
+      </section>
+    );
   };
 
   const renderTeamColumn = (team: 'azul' | 'vermelho', players: PlayerDTO[]) => {
@@ -196,6 +314,112 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
     );
   };
 
+  const renderSpyfallLobbyPanel = () => {
+    return (
+      <div className="space-y-4 my-auto">
+        {/* Configuração de Duração da Rodada */}
+        <div className="bg-[#FFFDF9] border-2 border-zinc-900 rounded-xl px-3.5 py-3 shadow-[0_4px_0_0_#18181b] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 text-xs text-zinc-800">
+            <div className="p-2 rounded-lg bg-[#FACC15] border-2 border-zinc-900 text-zinc-900 shrink-0">
+              <Clock className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="font-mono font-extrabold uppercase text-zinc-900">
+                Duração da Rodada
+              </div>
+              <div className="text-[11px] text-zinc-600 font-medium">
+                {isHost
+                  ? 'Escolha quanto tempo o grupo tem para descobrir o Impostor.'
+                  : 'Tempo definido pelo Host para a rodada.'}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {SPYFALL_DURATIONS.map((mins) => {
+              const active = roomState.spyfallConfig.duracaoMinutos === mins;
+              return (
+                <button
+                  key={mins}
+                  type="button"
+                  disabled={!isHost}
+                  onClick={() => onConfigureSpyfall(mins)}
+                  className={`min-h-[44px] px-3.5 py-2 rounded-xl border-2 border-zinc-900 font-mono font-extrabold text-xs transition-all ${
+                    active
+                      ? 'bg-[#4ADE80] text-zinc-900 shadow-[0_3px_0_0_#18181b]'
+                      : isHost
+                      ? 'bg-white hover:bg-zinc-100 text-zinc-900 shadow-[0_3px_0_0_#18181b] active:translate-y-[2px] active:shadow-none'
+                      : 'bg-[#F3EFE6] text-zinc-500 opacity-70 cursor-default'
+                  }`}
+                >
+                  {mins} min
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Grade Unificada de Jogadores (sem times) */}
+        <div className="bg-[#FFFDF9] border-2 border-zinc-900 rounded-2xl shadow-[0_4px_0_0_#18181b] overflow-hidden">
+          <div className="px-4 py-3 bg-zinc-900 text-white border-b-2 border-zinc-900 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Users className="w-4 h-4 text-[#FACC15]" />
+              <h2 className="font-display font-extrabold uppercase tracking-wider text-sm sm:text-base">
+                Jogadores na Roda (Todos vs Impostor)
+              </h2>
+            </div>
+            <span
+              className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-bold border-2 border-zinc-900 ${
+                connectedPlayers.length >= 3
+                  ? 'bg-[#4ADE80] text-zinc-900'
+                  : 'bg-[#FACC15] text-zinc-900'
+              }`}
+            >
+              {connectedPlayers.length} / mín. 3
+            </span>
+          </div>
+
+          <div className="p-3.5 sm:p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+            {roomState.jogadores.map((p) => {
+              const isMe = p.playerId === roomState.meuPlayerId;
+              return (
+                <div
+                  key={p.playerId}
+                  className={`flex items-center justify-between px-3 py-2.5 rounded-xl border-2 border-zinc-900 shadow-[0_2px_0_0_#18181b] ${
+                    isMe ? 'bg-[#FEF08A] text-zinc-900' : 'bg-white text-zinc-900'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span
+                      title={p.connected ? 'Online' : 'Desconectado'}
+                      className={`w-2.5 h-2.5 rounded-full border border-zinc-900 shrink-0 ${
+                        p.connected ? 'bg-[#4ADE80]' : 'bg-[#E11D48] animate-pulse'
+                      }`}
+                    />
+                    <span className="font-bold text-sm truncate">{p.nickname}</span>
+                  </div>
+
+                  <div className="flex items-center gap-1 shrink-0 ml-2">
+                    {isMe && (
+                      <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-zinc-900 text-[#FACC15] font-bold">
+                        VOCÊ
+                      </span>
+                    )}
+                    {p.isHost && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-[#FACC15] text-zinc-900 border border-zinc-900 font-bold">
+                        <Crown className="w-3 h-3" /> HOST
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-[100dvh] max-w-4xl mx-auto px-3 sm:px-6 py-3 sm:py-6 flex flex-col justify-between gap-4">
       {/* Header com Código, Botão de Compartilhar Link e Botão de QR Code */}
@@ -204,7 +428,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#FACC15] border-2 border-zinc-900 text-[10px] font-mono font-bold text-zinc-900 uppercase tracking-widest">
               <Shield className="w-3 h-3 shrink-0" />
-              <span>LOBBY DA SALA</span>
+              <span>LOBBY DO PARTY HUB</span>
             </div>
             <h1 className="font-display text-lg sm:text-2xl font-extrabold uppercase tracking-tight text-zinc-900 mt-1.5">
               {BRANDING.title}
@@ -285,41 +509,51 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
         </div>
       </header>
 
-      {/* Seu Time Atual + Botão de Trocar de Time */}
-      <div className="bg-[#FFFDF9] border-2 border-zinc-900 rounded-xl px-3.5 py-3 shadow-[0_4px_0_0_#18181b] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-zinc-700">
-        <div className="flex items-start sm:items-center gap-2.5">
-          <Radio className="w-4 h-4 text-zinc-900 shrink-0 mt-0.5 sm:mt-0" />
-          <span>
-            Você está no{' '}
-            <strong
-              className={`px-1.5 py-0.5 rounded font-bold text-white ${
-                roomState.meuTime === 'azul' ? 'bg-[#2563EB]' : 'bg-[#E11D48]'
-              }`}
+      {/* Seletor de Jogos do Hub */}
+      {renderGameSelector()}
+
+      {/* Conteúdo Dinâmico por Jogo Selecionado */}
+      {isCodenames ? (
+        <>
+          {/* Seu Time Atual + Botão de Trocar de Time */}
+          <div className="bg-[#FFFDF9] border-2 border-zinc-900 rounded-xl px-3.5 py-3 shadow-[0_4px_0_0_#18181b] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-zinc-700">
+            <div className="flex items-start sm:items-center gap-2.5">
+              <Radio className="w-4 h-4 text-zinc-900 shrink-0 mt-0.5 sm:mt-0" />
+              <span>
+                Você está no{' '}
+                <strong
+                  className={`px-1.5 py-0.5 rounded font-bold text-white ${
+                    roomState.meuTime === 'azul' ? 'bg-[#2563EB]' : 'bg-[#E11D48]'
+                  }`}
+                >
+                  {BRANDING.teams[roomState.meuTime].name}
+                </strong>
+                . Os papéis (<strong className="text-zinc-900">Capitão</strong> e{' '}
+                <strong className="text-zinc-900">Porta-voz</strong>) rodam sozinhos na fila!
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={onSwitchTeam}
+              className="min-h-[48px] shrink-0 py-2.5 px-4 rounded-xl bg-white hover:bg-zinc-100 active:translate-y-[3px] active:shadow-none text-zinc-900 font-display font-bold uppercase tracking-wider text-xs border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center justify-center gap-2 transition-all"
             >
-              {BRANDING.teams[roomState.meuTime].name}
-            </strong>
-            . Os papéis (<strong className="text-zinc-900">Capitão</strong> e{' '}
-            <strong className="text-zinc-900">Porta-voz</strong>) rodam sozinhos na fila!
-          </span>
-        </div>
+              <ArrowLeftRight className="w-4 h-4 text-zinc-900" />
+              <span>
+                Ir para {roomState.meuTime === 'azul' ? 'Time Vermelho' : 'Time Azul'}
+              </span>
+            </button>
+          </div>
 
-        <button
-          type="button"
-          onClick={onSwitchTeam}
-          className="min-h-[48px] shrink-0 py-2.5 px-4 rounded-xl bg-white hover:bg-zinc-100 active:translate-y-[3px] active:shadow-none text-zinc-900 font-display font-bold uppercase tracking-wider text-xs border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center justify-center gap-2 transition-all"
-        >
-          <ArrowLeftRight className="w-4 h-4 text-zinc-900" />
-          <span>
-            Ir para {roomState.meuTime === 'azul' ? 'Time Vermelho' : 'Time Azul'}
-          </span>
-        </button>
-      </div>
-
-      {/* Duas Colunas de Times */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-5 my-auto">
-        {renderTeamColumn('azul', bluePlayers)}
-        {renderTeamColumn('vermelho', redPlayers)}
-      </div>
+          {/* Duas Colunas de Times */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-5 my-auto">
+            {renderTeamColumn('azul', bluePlayers)}
+            {renderTeamColumn('vermelho', redPlayers)}
+          </div>
+        </>
+      ) : (
+        renderSpyfallLobbyPanel()
+      )}
 
       {/* Rodapé de Controle do Host / Status */}
       <footer className="bg-[#FFFDF9] border-2 border-zinc-900 rounded-2xl p-3.5 sm:p-5 shadow-[0_4px_0_0_#18181b]">
@@ -331,21 +565,25 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
               </span>
               <span>
                 {canStart
-                  ? 'Tudo pronto! Você pode iniciar a partida.'
-                  : 'Mínimo de 2 jogadores em cada time para começar.'}
+                  ? `Tudo pronto! Você pode iniciar ${BRANDING.games[roomState.jogoAtual].title}.`
+                  : isCodenames
+                  ? 'Mínimo de 2 jogadores em cada time para começar.'
+                  : 'Mínimo de 3 jogadores conectados para iniciar O Impostor.'}
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <button
-                type="button"
-                onClick={onShuffleTeams}
-                disabled={roomState.jogadores.length < 2}
-                className="min-h-[48px] px-4 py-3 rounded-xl bg-white hover:bg-zinc-100 active:translate-y-[3px] active:shadow-none disabled:opacity-40 disabled:pointer-events-none text-zinc-900 font-display font-extrabold uppercase tracking-wider text-xs border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center justify-center gap-2 transition-all"
-              >
-                <Shuffle className="w-4 h-4 text-zinc-900" />
-                <span>Sortear Times</span>
-              </button>
+            <div className={`grid grid-cols-1 ${isCodenames ? 'sm:grid-cols-2' : ''} gap-2.5`}>
+              {isCodenames && (
+                <button
+                  type="button"
+                  onClick={onShuffleTeams}
+                  disabled={roomState.jogadores.length < 2}
+                  className="min-h-[48px] px-4 py-3 rounded-xl bg-white hover:bg-zinc-100 active:translate-y-[3px] active:shadow-none disabled:opacity-40 disabled:pointer-events-none text-zinc-900 font-display font-extrabold uppercase tracking-wider text-xs border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center justify-center gap-2 transition-all"
+                >
+                  <Shuffle className="w-4 h-4 text-zinc-900" />
+                  <span>Sortear Times</span>
+                </button>
+              )}
 
               <button
                 type="button"
@@ -354,7 +592,7 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                 className="min-h-[48px] px-5 py-3 rounded-xl bg-[#4ADE80] hover:bg-[#86EFAC] active:translate-y-[3px] active:shadow-none disabled:opacity-40 disabled:pointer-events-none text-zinc-900 font-display font-extrabold uppercase tracking-wider text-xs sm:text-sm border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center justify-center gap-2 transition-all"
               >
                 <Play className="w-4 h-4 fill-current" />
-                <span>Iniciar Partida</span>
+                <span>Iniciar {BRANDING.games[roomState.jogoAtual].title}</span>
               </button>
             </div>
           </div>
@@ -367,13 +605,17 @@ export const LobbyScreen: React.FC<LobbyScreenProps> = ({
                 <strong className="text-zinc-900">
                   {roomState.jogadores.find((j) => j.isHost)?.nickname ?? 'Host'}
                 </strong>
-                ) iniciar a partida...
+                ) iniciar {BRANDING.games[roomState.jogoAtual].title}...
               </span>
             </div>
             <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-[#F3EFE6] border-2 border-zinc-900 text-zinc-900">
-              {canStart
-                ? 'Equipes completas ✓'
-                : `Azuis (${bluePlayers.length}/2) • Vermelhos (${redPlayers.length}/2)`}
+              {isCodenames
+                ? canStart
+                  ? 'Equipes completas ✓'
+                  : `Azuis (${bluePlayers.length}/2) • Vermelhos (${redPlayers.length}/2)`
+                : canStart
+                ? `Pronto (${connectedPlayers.length} jogadores) ✓`
+                : `Jogadores (${connectedPlayers.length}/3)`}
             </span>
           </div>
         )}

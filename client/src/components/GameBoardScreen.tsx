@@ -572,7 +572,7 @@ export const GameBoardScreen: React.FC<GameBoardScreenProps> = ({
                 className="min-h-[48px] px-4 py-3 rounded-xl bg-white hover:bg-zinc-100 active:translate-y-[3px] active:shadow-none text-zinc-900 font-display font-bold uppercase tracking-wider text-xs border-2 border-zinc-900 shadow-[0_4px_0_0_#18181b] flex items-center justify-center gap-2 transition-all"
               >
                 <Users className="w-4 h-4" />
-                <span>Voltar ao Lobby</span>
+                <span>Trocar de Jogo (Voltar ao Lobby)</span>
               </button>
             </div>
           ) : (

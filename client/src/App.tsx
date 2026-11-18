@@ -3,6 +3,7 @@ import { AlertTriangle, X } from 'lucide-react';
 import { GameBoardScreen } from './components/GameBoardScreen';
 import { HomeScreen } from './components/HomeScreen';
 import { LobbyScreen } from './components/LobbyScreen';
+import { SpyfallBoard } from './components/SpyfallBoard';
 import { useGameSocket } from './hooks/useGameSocket';
 
 export const App: React.FC = () => {
@@ -16,6 +17,8 @@ export const App: React.FC = () => {
     clearError,
     createRoom,
     joinRoom,
+    selectGame,
+    configureSpyfall,
     switchTeam,
     shuffleTeams,
     startGame,
@@ -25,6 +28,10 @@ export const App: React.FC = () => {
     passTurn,
     nextMatch,
     backToLobby,
+    callSpyfallVote,
+    castSpyfallVote,
+    impostorRiskLocation,
+    impostorGuessLocation,
     leaveRoom,
   } = useGameSocket();
 
@@ -59,9 +66,22 @@ export const App: React.FC = () => {
       ) : roomState.fase === 'LOBBY' ? (
         <LobbyScreen
           roomState={roomState}
+          onSelectGame={selectGame}
+          onConfigureSpyfall={configureSpyfall}
           onSwitchTeam={switchTeam}
           onShuffleTeams={shuffleTeams}
           onStartGame={startGame}
+          onLeaveRoom={leaveRoom}
+        />
+      ) : roomState.jogoAtual === 'spyfall' ? (
+        <SpyfallBoard
+          roomState={roomState}
+          onCallVote={callSpyfallVote}
+          onCastVote={castSpyfallVote}
+          onRiskLocation={impostorRiskLocation}
+          onGuessLocation={impostorGuessLocation}
+          onNextMatch={nextMatch}
+          onBackToLobby={backToLobby}
           onLeaveRoom={leaveRoom}
         />
       ) : (

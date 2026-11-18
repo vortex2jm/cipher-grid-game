@@ -2,8 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import {
   ClientToServerEvents,
+  GameId,
   RoomStateDTO,
   ServerToClientEvents,
+  SpyfallDurationMinutes,
 } from '../../../shared/types';
 
 const STORAGE_KEYS = {
@@ -256,6 +258,30 @@ export function useGameSocket() {
     [playerId, setNickname, showError]
   );
 
+  const selectGame = useCallback(
+    (jogo: GameId) => {
+      if (!roomState) return;
+      socketRef.current?.emit('selecionar_jogo', {
+        roomCode: roomState.roomCode,
+        playerId,
+        jogo,
+      });
+    },
+    [roomState, playerId]
+  );
+
+  const configureSpyfall = useCallback(
+    (duracaoMinutos: SpyfallDurationMinutes) => {
+      if (!roomState) return;
+      socketRef.current?.emit('configurar_spyfall', {
+        roomCode: roomState.roomCode,
+        playerId,
+        duracaoMinutos,
+      });
+    },
+    [roomState, playerId]
+  );
+
   const switchTeam = useCallback(() => {
     if (!roomState) return;
     socketRef.current?.emit('trocar_time', {
@@ -341,6 +367,46 @@ export function useGameSocket() {
     });
   }, [roomState, playerId]);
 
+  const callSpyfallVote = useCallback(() => {
+    if (!roomState) return;
+    socketRef.current?.emit('spyfall_chamar_votacao', {
+      roomCode: roomState.roomCode,
+      playerId,
+    });
+  }, [roomState, playerId]);
+
+  const castSpyfallVote = useCallback(
+    (suspeitoId: string) => {
+      if (!roomState) return;
+      socketRef.current?.emit('spyfall_votar', {
+        roomCode: roomState.roomCode,
+        playerId,
+        suspeitoId,
+      });
+    },
+    [roomState, playerId]
+  );
+
+  const impostorRiskLocation = useCallback(() => {
+    if (!roomState) return;
+    socketRef.current?.emit('spyfall_arriscar_local', {
+      roomCode: roomState.roomCode,
+      playerId,
+    });
+  }, [roomState, playerId]);
+
+  const impostorGuessLocation = useCallback(
+    (localEscolhido: string) => {
+      if (!roomState) return;
+      socketRef.current?.emit('spyfall_adivinhar_local', {
+        roomCode: roomState.roomCode,
+        playerId,
+        localEscolhido,
+      });
+    },
+    [roomState, playerId]
+  );
+
   const leaveRoom = useCallback(() => {
     if (roomState) {
       socketRef.current?.emit('sair_sala', {
@@ -366,6 +432,8 @@ export function useGameSocket() {
     clearError,
     createRoom,
     joinRoom,
+    selectGame,
+    configureSpyfall,
     switchTeam,
     shuffleTeams,
     startGame,
@@ -375,6 +443,10 @@ export function useGameSocket() {
     passTurn,
     nextMatch,
     backToLobby,
+    callSpyfallVote,
+    castSpyfallVote,
+    impostorRiskLocation,
+    impostorGuessLocation,
     leaveRoom,
   };
 }
