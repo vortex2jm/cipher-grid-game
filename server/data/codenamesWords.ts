@@ -5,7 +5,7 @@
  */
 export const WORD_DICTIONARY: readonly string[] = Array.from(
   new Set([
-    // Exemplos clássicos e obrigatórios do prompt
+    // Exemplos clássicos e obrigatórios
     'BANCO', 'MANGA', 'BATERIA', 'COROA', 'PLANTA', 'REDE', 'OPERACAO', 'FANTASMA',
     'SATELITE', 'PIRAMIDE', 'CARNAVAL', 'BOTECO', 'CHURRASCO', 'GARRAFA', 'ESPELHO',
     'VAMPIRO', 'CATEDRAL', 'SUBMARINO', 'TORNADO', 'LASER', 'CODIGO', 'RAIO',
@@ -16,7 +16,7 @@ export const WORD_DICTIONARY: readonly string[] = Array.from(
     // Polissemia e associações táticas
     'AGENTE', 'AGUA', 'AGUIA', 'ALARME', 'ALIANCA', 'ALVO', 'ANCORA', 'ANEL',
     'ANJO', 'ANTENA', 'APITO', 'ARCO', 'AREIA', 'ARENA', 'ARMA', 'ARQUIVO',
-    'ARTE', 'ARVORE', 'ASA', 'ASilo', 'ASTRO', 'ATAQUE', 'ATLAS', 'ATOR',
+    'ARTE', 'ARVORE', 'ASA', 'ASILO', 'ASTRO', 'ATAQUE', 'ATLAS', 'ATOR',
     'AUDIENCIA', 'AULA', 'AURORA', 'AVIAO', 'AZUL', 'BACIA', 'BAIA', 'BAILE',
     'BAIXO', 'BALA', 'BALANCA', 'BALAO', 'BALEIA', 'BALSA', 'BAMBU', 'BANDA',
     'BANDEIRA', 'BANHO', 'BAR', 'BARBA', 'BARCO', 'BARRA', 'BARRACA', 'BARREIRA',
@@ -29,7 +29,7 @@ export const WORD_DICTIONARY: readonly string[] = Array.from(
     'CADERNO', 'CAFE', 'CAIXA', 'CAIXAO', 'CAJU', 'CALCA', 'CALDA', 'CALDO',
     'CALICE', 'CAMA', 'CAMALEAO', 'CAMARA', 'CAMARAO', 'CAMELO', 'CAMERA', 'CAMINHAO',
     'CAMINHO', 'CAMISA', 'CAMPEAO', 'CANA', 'CANAL', 'CANARIO', 'CANECA', 'CANELA',
-    'CANETA', 'CANGURU', 'CANHAO', 'CANivete', 'CANO', 'CANOA', 'CANTO', 'CAPA',
+    'CANETA', 'CANGURU', 'CANHAO', 'CANIVETE', 'CANO', 'CANOA', 'CANTO', 'CAPA',
     'CAPACETE', 'CAPITAL', 'CAPITAO', 'CAPIVARA', 'CAPO', 'CARA', 'CARACOL', 'CARANGUEJO',
     'CARVAO', 'CARDEAL', 'CARIMBO', 'CARNE', 'CARRO', 'CARROCA', 'CARTA', 'CARTAO',
     'CARTAZ', 'CARTEIRA', 'CARTEIRO', 'CASA', 'CASACO', 'CASAMENTO', 'CASINO', 'CASTELO',
@@ -98,7 +98,7 @@ export const WORD_DICTIONARY: readonly string[] = Array.from(
     'MOEDA', 'MOINHO', 'MOLA', 'MOLDURA', 'MOLEQUE', 'MOLHO', 'MOMENTO', 'MONGE',
     'MONSTRO', 'MONTANHA', 'MONUMENTO', 'MORANGO', 'MORCEGO', 'MORRO', 'MORTE', 'MOSAICO',
     'MOSCA', 'MOSQUITO', 'MOSTARDA', 'MOTO', 'MOTOR', 'MUMIA', 'MUNDO', 'MUNICAO',
-    'MURALHA', 'MURO', 'MUSEU', 'MUSICA', ' JANGADA', 'NAVE', 'NAVIO', 'NEBLINA',
+    'MURALHA', 'MURO', 'MUSEU', 'MUSICA', 'NAVE', 'NAVIO', 'NEBLINA',
     'NETUNO', 'NEVE', 'NINHO', 'NINJA', 'NIVEL', 'NO', 'NOITE', 'NOIVA',
     'NOME', 'NORTE', 'NOVELO', 'NUVEM', 'OASIS', 'OCEANO', 'OCULOS', 'OESTE',
     'OFICINA', 'OLEO', 'OLHO', 'OLIMPIADA', 'OMBRO', 'ONCA', 'ONDA', 'ONIBUS',
@@ -112,7 +112,7 @@ export const WORD_DICTIONARY: readonly string[] = Array.from(
     'PEDRA', 'PEGADA', 'PEIXE', 'PELE', 'PELICANO', 'PENDULO', 'PENTE', 'PEPINO',
     'PERA', 'PERDIZ', 'PERFUME', 'PERGAMINHO', 'PERIGO', 'PERNA', 'PEROLA', 'PERU',
     'PESADELO', 'PESCA', 'PESCOCO', 'PESO', 'PESSOA', 'PETECA', 'PETROLEO', 'PIANO',
-    'PICADILHO', 'PICAREIA', 'PICO', 'PICOLE', 'PIJAMA', 'PILAR', 'PILHA', 'PILOTO',
+    'PICADILHO', 'PICARETA', 'PICO', 'PICOLE', 'PIJAMA', 'PILAR', 'PILHA', 'PILOTO',
     'PIMENTA', 'PINCEL', 'PINGUIM', 'PINHEIRO', 'PINO', 'PINTOR', 'PINTURA', 'PIPA',
     'PIPOCA', 'PIRATA', 'PIRES', 'PISCINA', 'PISTA', 'PISTOLA', 'PITANGA', 'PIZZA',
     'PLACA', 'PLANETA', 'PLASTICO', 'PLATEIA', 'PLUMA', 'PNEU', 'PO', 'POCO',
@@ -157,4 +157,3 @@ export const WORD_DICTIONARY: readonly string[] = Array.from(
     'XADREZ', 'XAROPE', 'XICARA', 'ZEBRA', 'ZERO', 'ZONA', 'ZOOLOGICO'
   ].map((w) => w.trim().toUpperCase()))
 );
-
