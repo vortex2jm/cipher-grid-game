@@ -1,7 +1,25 @@
+export const HUB_TITLE = 'Passeio dos Cria — Party Hub';
+
 export const BRANDING = {
-  title: 'Cipher Grid Game',
-  subtitle: 'OPERAÇÃO TÁTICA DE DECODIFICAÇÃO // REDE LOCAL',
-  version: 'v1.0 // CLASSIFIED DOSSIER',
+  title: HUB_TITLE,
+  subtitle: 'CENTRAL DE PARTY GAMES // REDE LOCAL',
+  version: 'v2.0 // PARTY HUB LAN',
+  games: {
+    codenames: {
+      id: 'codenames',
+      title: 'Código Secreto',
+      subtitle: 'Associação tática de palavras em grade 5×5 por equipes',
+      minPlayers: 4,
+      badge: 'EQUIPES 2v2+',
+    },
+    spyfall: {
+      id: 'spyfall',
+      title: 'O Impostor',
+      subtitle: 'Dedução social, blefe e interrogatório contra o relógio',
+      minPlayers: 3,
+      badge: 'DEDUÇÃO SOCIAL',
+    },
+  },
   teams: {
     azul: {
       name: 'Esquadrão Azul',
@@ -18,4 +36,3 @@ export const BRANDING = {
     agente: 'Agente Operacional',
   },
 } as const;
-

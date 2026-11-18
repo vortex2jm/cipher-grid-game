@@ -1,3 +1,5 @@
+export type GameId = 'codenames' | 'spyfall';
+
 export type TeamColor = 'azul' | 'vermelho';
 
 export type CardRealColor = 'azul' | 'vermelho' | 'neutro' | 'assassino';
@@ -9,6 +11,60 @@ export type GamePhase = 'LOBBY' | 'JOGO' | 'FIM';
 export type PlayerRole = 'capitao' | 'portaVoz' | 'agente';
 
 export type WinReason = 'TODAS_CARTAS' | 'ASSASSINO' | 'CARTAS_INIMIGO';
+
+export type SpyfallDurationMinutes = 5 | 7 | 8;
+
+export type SpyfallSubphase = 'INTERROGATORIO' | 'VOTACAO' | 'CARTADA_FINAL';
+
+export type SpyfallWinner = 'impostor' | 'inocentes';
+
+export type SpyfallWinReason =
+  | 'VOTACAO_INOCENTE'
+  | 'CARTADA_ACERTOU'
+  | 'CARTADA_ERROU'
+  | 'CARTADA_TEMPO_ESGOTADO'
+  | 'ARRISCOU_ACERTOU'
+  | 'ARRISCOU_ERROU';
+
+export interface SpyfallVoteStateDTO {
+  chamadoPorId: string;
+  chamadoPorNickname: string;
+  totalVotantes: number;
+  votosRecebidos: number;
+  jaVotei: boolean;
+  meuVotoId: string | null;
+}
+
+export interface SpyfallPlayerEndRevealDTO {
+  playerId: string;
+  nickname: string;
+  ehImpostor: boolean;
+  cargo: string | null;
+}
+
+export interface SpyfallStateDTO {
+  subfase: SpyfallSubphase;
+  ehImpostor: boolean;
+  local: string | null;
+  cargo: string | null;
+  listaLocais: string[];
+  primeiroAPerguntarId: string;
+  primeiroAPerguntarNickname: string;
+  duracaoMinutos: SpyfallDurationMinutes;
+  fimTimerTimestamp: number | null;
+  tempoRestanteMs: number;
+  fimCartadaTimestamp: number | null;
+  tempoRestanteCartadaMs: number;
+  impostorReveladoId: string | null;
+  impostorReveladoNickname: string | null;
+  chamouVotacao: boolean;
+  votacaoAtual: SpyfallVoteStateDTO | null;
+  vencedor: SpyfallWinner | null;
+  motivoVitoria: SpyfallWinReason | null;
+  localSecretoFim: string | null;
+  revelacaoJogadores: SpyfallPlayerEndRevealDTO[];
+  ultimoPalpiteLocal: string | null;
+}
 
 export interface PlayerDTO {
   playerId: string;
@@ -46,6 +102,7 @@ export interface TurnLogEntry {
 export interface RoomStateDTO {
   roomCode: string;
   hostId: string;
+  jogoAtual: GameId;
   fase: GamePhase;
   partidaNumero: number;
   meuPlayerId: string;
@@ -86,6 +143,10 @@ export interface RoomStateDTO {
   vencedor: TeamColor | null;
   motivoVitoria: WinReason | null;
   historico: TurnLogEntry[];
+  spyfallConfig: {
+    duracaoMinutos: SpyfallDurationMinutes;
+  };
+  spyfall?: SpyfallStateDTO;
   lanUrl?: string;
 }
 
@@ -135,6 +196,8 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
   criar_sala: (payload: CreateRoomPayload, callback?: (res: { ok: boolean; roomCode?: string; erro?: string }) => void) => void;
   entrar_sala: (payload: JoinRoomPayload, callback?: (res: { ok: boolean; roomCode?: string; erro?: string }) => void) => void;
+  selecionar_jogo: (payload: { roomCode: string; playerId: string; jogo: GameId }) => void;
+  configurar_spyfall: (payload: { roomCode: string; playerId: string; duracaoMinutos: SpyfallDurationMinutes }) => void;
   trocar_time: (payload: RoomActionPayload) => void;
   sortear_times: (payload: RoomActionPayload) => void;
   iniciar_partida: (payload: RoomActionPayload) => void;
@@ -145,5 +208,8 @@ export interface ClientToServerEvents {
   proxima_partida: (payload: RoomActionPayload) => void;
   voltar_lobby: (payload: RoomActionPayload) => void;
   sair_sala: (payload: RoomActionPayload) => void;
+  spyfall_chamar_votacao: (payload: RoomActionPayload) => void;
+  spyfall_votar: (payload: { roomCode: string; playerId: string; suspeitoId: string }) => void;
+  spyfall_arriscar_local: (payload: RoomActionPayload) => void;
+  spyfall_adivinhar_local: (payload: { roomCode: string; playerId: string; localEscolhido: string }) => void;
 }
-
