@@ -4,28 +4,40 @@
 
 @layer base {
   body {
-    background-color: #020617;
-    background-image: 
-      radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.08) 0%, transparent 60%),
-      linear-gradient(to right, rgba(30, 41, 59, 0.28) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(30, 41, 59, 0.28) 1px, transparent 1px);
-    background-size: 100% 100%, 28px 28px, 28px 28px;
+    background-color: #F3EFE6;
+    background-image: radial-gradient(#D8D0C1 1.5px, transparent 1.5px);
+    background-size: 20px 20px;
+    color: #18181B;
     min-height: 100dvh;
   }
 }
 
-@keyframes pulse-border-red {
+@keyframes card-flip-reveal {
+  0% {
+    transform: perspective(700px) rotateY(90deg) scale(0.92);
+  }
+  65% {
+    transform: perspective(700px) rotateY(-8deg) scale(1.04);
+  }
+  100% {
+    transform: perspective(700px) rotateY(0deg) scale(1);
+  }
+}
+
+.card-revealed-anim {
+  animation: card-flip-reveal 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-style: preserve-3d;
+}
+
+@keyframes assassin-warning-pulse {
   0%, 100% {
-    border-color: rgba(239, 68, 68, 0.9);
-    box-shadow: 0 0 12px rgba(239, 68, 68, 0.45), inset 0 0 8px rgba(168, 85, 247, 0.25);
+    border-color: #18181B;
   }
   50% {
-    border-color: rgba(168, 85, 247, 0.9);
-    box-shadow: 0 0 18px rgba(168, 85, 247, 0.55), inset 0 0 12px rgba(239, 68, 68, 0.35);
+    border-color: #FACC15;
   }
 }
 
 .assassin-pulse {
-  animation: pulse-border-red 2.2s infinite ease-in-out;
+  animation: assassin-warning-pulse 1.4s steps(2, end) infinite;
 }
-
