@@ -2,8 +2,6 @@
 
 Aplicação web multiplayer em tempo real para rede local (LAN) de dedução e associação de palavras em uma grade tática **5×5**.
 
-> **Nota:** Projeto independente inspirado em jogos de dedução de palavras em equipe. Todo o código, interface e banco de palavras foram escritos de forma original, sem afiliação ou vínculo com a Czech Games Edition (CGE).
-
 ---
 
 ## Funcionalidades
