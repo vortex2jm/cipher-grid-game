@@ -71,6 +71,15 @@ npm run build
 npm start
 ```
 
+### 4. Executar com Docker (em segundo plano)
+Para deixar a aplicação rodando continuamente em segundo plano na sua máquina (inclusive após reiniciar), sem precisar manter nenhum terminal aberto:
+```bash
+docker compose up -d --build
+```
+Comandos úteis para gerenciar o container:
+- **Ver logs:** `docker compose logs -f`
+- **Parar o container:** `docker compose down`
+
 ---
 
 ## Estrutura do Projeto

@@ -17,17 +17,30 @@ const HOST = '0.0.0.0';
 const isProduction = process.env.NODE_ENV === 'production';
 
 function getLocalLanIp(): string {
+  const hostIpOverride = process.env.HOST_IP?.trim();
+  if (hostIpOverride) {
+    return hostIpOverride;
+  }
+
   const interfaces = os.networkInterfaces();
+  const virtualIfaces = /^(docker|br-|veth|virbr|tun|tap|lo)/i;
+  const candidates: string[] = [];
+
   for (const name of Object.keys(interfaces)) {
+    if (virtualIfaces.test(name)) continue;
     const netList = interfaces[name];
     if (!netList) continue;
     for (const net of netList) {
       if (net.family === 'IPv4' && !net.internal) {
-        return net.address;
+        candidates.push(net.address);
       }
     }
   }
-  return 'localhost';
+
+  const preferred = candidates.find(
+    (ip) => ip.startsWith('192.168.') || ip.startsWith('10.')
+  );
+  return preferred ?? candidates[0] ?? 'localhost';
 }
 
 const app = express();

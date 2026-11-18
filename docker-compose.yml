@@ -1,0 +1,9 @@
+services:
+  cipher-grid:
+    container_name: cipher-grid
+    build: .
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
