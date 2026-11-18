@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Check, Copy, QrCode, Share2, Wifi, X } from 'lucide-react';
 import { generateQrMatrix } from '../utils/qrcode';
+import { BRANDING } from '../../../shared/branding';
 
 interface ShareRoomModalProps {
   roomCode: string;
@@ -47,7 +48,7 @@ export const ShareRoomModal: React.FC<ShareRoomModalProps> = ({
     if (typeof navigator.share === 'function') {
       try {
         await navigator.share({
-          title: `Sala ${roomCode} — Código Secreto`,
+          title: `Sala ${roomCode} — ${BRANDING.title}`,
           text: `Entre direto na nossa operação (Sala ${roomCode}):`,
           url: inviteUrl,
         });
